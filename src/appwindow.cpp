@@ -26,7 +26,7 @@ AppWindow::AppWindow(int width, int height) {
 
     gl::exts::LoadTest glLoadResult = gl::sys::LoadFunctions();
     if (!glLoadResult) {
-        throw AppException("OpenGL", "Error in glLoad", "");
+        throw AppException("OpenGL", "Error in glLoad");
     }
 
     gl::ClearColor(0.15f, 0.15f, 0.15f, 1.0f);
