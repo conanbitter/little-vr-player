@@ -3,6 +3,7 @@
 #include <SDL.h>
 
 #include <fstream>
+#include <gl/gl_core_3_2.hpp>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -41,6 +42,13 @@ int main(int argc, char **argv) {
         throw AppException("SDL", "Error creating context", getSDLError());
     }
 
+    gl::exts::LoadTest glLoadResult = gl::sys::LoadFunctions();
+    if (!glLoadResult) {
+        throw AppException("OpenGL", "Error in glLoad", "");
+    }
+
+    gl::ClearColor(0.15f, 0.15f, 0.15f, 1.0f);
+
     SDL_Event event;
     bool working = true;
     cout << "Run..." << endl;
@@ -53,6 +61,7 @@ int main(int argc, char **argv) {
             }
         }
 
+        gl::Clear(gl::COLOR_BUFFER_BIT);
         SDL_GL_SwapWindow(window);
         SDL_Delay(5);
     }
