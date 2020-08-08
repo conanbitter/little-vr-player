@@ -17,6 +17,15 @@ const int SCREEN_HEIGHT = 720;
 SDL_Window *window;
 SDL_GLContext context;
 
+string getSDLError() {
+    const char *error = SDL_GetError();
+    if (error != nullptr) {
+        return string(error);
+    } else {
+        return "unknown";
+    }
+}
+
 int main(int argc, char **argv) {
     cout << "Init..." << endl;
 
@@ -29,7 +38,7 @@ int main(int argc, char **argv) {
     window = SDL_CreateWindow("Little VR player", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
     context = SDL_GL_CreateContext(window);
     if (context == NULL) {
-        throw AppException("SDL", "Error creating context", "");
+        throw AppException("SDL", "Error creating context", getSDLError());
     }
 
     SDL_Event event;
