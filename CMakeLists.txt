@@ -6,6 +6,8 @@ set(EXECUTABLE_OUTPUT_PATH ./${CMAKE_BUILD_TYPE})
 
 add_executable(lvrp
     src/main.cpp
+    src/utils.hpp
+    src/utils.cpp
 )
 
 find_package(SDL2 REQUIRED)

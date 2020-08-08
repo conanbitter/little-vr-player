@@ -7,6 +7,8 @@
 #include <sstream>
 #include <string>
 
+#include "utils.hpp"
+
 using namespace std;
 
 const int SCREEN_WIDTH = 1280;
@@ -27,7 +29,7 @@ int main(int argc, char **argv) {
     window = SDL_CreateWindow("Little VR player", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL);
     context = SDL_GL_CreateContext(window);
     if (context == NULL) {
-        cout << "Error creating context" << endl;
+        throw AppException("SDL", "Error creating context", "");
     }
 
     SDL_Event event;
