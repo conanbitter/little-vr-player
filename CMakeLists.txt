@@ -16,6 +16,8 @@ add_executable(lvrp
     src/shaders.cpp
     src/appwindow.hpp
     src/appwindow.cpp
+    src/graphics.hpp
+    src/graphics.cpp
 )
 
 target_include_directories(lvrp

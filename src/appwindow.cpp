@@ -2,6 +2,8 @@
 
 #include <gl/gl_core_3_2.hpp>
 
+#include "graphics.hpp"
+
 string AppWindow::getSDLError() {
     const char* error = SDL_GetError();
     if (error != nullptr) {
@@ -43,6 +45,7 @@ AppWindow::~AppWindow() {
 }
 
 void AppWindow::run() {
+    Graphics graphics;
     SDL_Event event;
     bool working = true;
     while (working) {
