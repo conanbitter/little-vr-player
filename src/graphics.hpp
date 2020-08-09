@@ -4,7 +4,6 @@
 
 const GLuint VERTEX_POSITION_LOCATION = 0;
 const GLuint VERTEX_UV_LOCATION = 1;
-const GLuint VERTEX_COLOR_LOCATION = 2;
 
 class Graphics {
    private:
