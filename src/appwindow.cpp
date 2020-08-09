@@ -1,8 +1,36 @@
 #include "appwindow.hpp"
 
 #include <gl/gl_core_3_2.hpp>
+#include <string>
 
 #include "graphics.hpp"
+#include "shaders.hpp"
+
+const string vertexShaderCode = R"(
+    #version 410
+
+    layout(location = 0) in vec3 vert;
+    layout(location = 1) in vec2 vertUV;
+
+    out vec2 fragUV;
+
+    void main() {
+        gl_Position = vec4(vert.x, vert.y, vert.z, 1.0);
+        fragUV = vertUV;
+    }
+)";
+
+const string fragmentShaderCode = R"(
+    #version 410
+
+    in vec2 fragUV;
+
+    layout(location = 0) out vec4 outputColor;
+
+    void main() {
+        outputColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+)";
 
 string AppWindow::getSDLError() {
     const char* error = SDL_GetError();
@@ -45,7 +73,37 @@ AppWindow::~AppWindow() {
 }
 
 void AppWindow::run() {
+    GLfloat quadVertex[] = {
+        -0.5,
+        -0.5,
+        0.0,
+        0.0,
+        0.0,
+        -0.5,
+        0.5,
+        0.0,
+        0.0,
+        0.0,
+        0.5,
+        0.5,
+        0.0,
+        0.0,
+        0.0,
+        0.5,
+        -0.5,
+        0.0,
+        0.0,
+        0.0,
+    };
+
+    GLuint quadIndex[] = {0, 1, 2, 0, 2, 3};
+
     Graphics graphics;
+    graphics.loadMesh(quadVertex, 4, quadIndex, 6);
+
+    ShaderProgram shader(vertexShaderCode, fragmentShaderCode);
+    shader.bind();
+
     SDL_Event event;
     bool working = true;
     while (working) {
@@ -58,6 +116,9 @@ void AppWindow::run() {
         }
 
         gl::Clear(gl::COLOR_BUFFER_BIT);
+
+        graphics.drawMesh();
+
         SDL_GL_SwapWindow(window);
         SDL_Delay(5);
     }
