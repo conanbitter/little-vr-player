@@ -5,6 +5,7 @@
 
 #include "graphics.hpp"
 #include "shaders.hpp"
+#include "textures.hpp"
 
 const string vertexShaderCode = R"(
     #version 410
@@ -22,13 +23,14 @@ const string vertexShaderCode = R"(
 
 const string fragmentShaderCode = R"(
     #version 410
+    uniform sampler2D tex;
 
     in vec2 fragUV;
 
     layout(location = 0) out vec4 outputColor;
 
     void main() {
-        outputColor = vec4(1.0, 0.0, 0.0, 1.0);
+        outputColor = texture(tex, fragUV);
     }
 )";
 
@@ -83,16 +85,16 @@ void AppWindow::run() {
         0.5,
         0.0,
         0.0,
-        0.0,
+        1.0,
         0.5,
         0.5,
         0.0,
-        0.0,
-        0.0,
+        1.0,
+        1.0,
         0.5,
         -0.5,
         0.0,
-        0.0,
+        1.0,
         0.0,
     };
 
@@ -103,6 +105,9 @@ void AppWindow::run() {
 
     ShaderProgram shader(vertexShaderCode, fragmentShaderCode);
     shader.bind();
+
+    Texture splash;
+    splash.loadFromFile("splash.png");
 
     SDL_Event event;
     bool working = true;
@@ -117,6 +122,7 @@ void AppWindow::run() {
 
         gl::Clear(gl::COLOR_BUFFER_BIT);
 
+        splash.bind();
         graphics.drawMesh();
 
         SDL_GL_SwapWindow(window);

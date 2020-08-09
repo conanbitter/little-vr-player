@@ -6,6 +6,7 @@ set(EXECUTABLE_OUTPUT_PATH ./${CMAKE_BUILD_TYPE})
 
 find_package(SDL2 REQUIRED)
 find_package(glLoadGen REQUIRED)
+find_package(STB REQUIRED)
 
 add_executable(lvrp
     ${GL_LOAD_GEN_DIR}/gl/gl_core_3_2.cpp
@@ -18,12 +19,15 @@ add_executable(lvrp
     src/appwindow.cpp
     src/graphics.hpp
     src/graphics.cpp
+    src/textures.hpp
+    src/textures.cpp
 )
 
 target_include_directories(lvrp
     PUBLIC
         ${GL_LOAD_GEN_DIR}
         ${SDL2_INCLUDE_DIR_64}
+        ${STB_INCLUDE_DIR}
 )
 
 target_link_directories(lvrp

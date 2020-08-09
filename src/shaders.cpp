@@ -78,6 +78,13 @@ ShaderProgram::ShaderProgram(string vertexShader, string fragmentShader) {
     if (result != true) {
         throw AppException("OpenGL", "Shader link error", getProgramLog(program));
     }
+
+    GLint tex = gl::GetUniformLocation(program, "tex");
+    if (tex == -1) {
+        throw AppException("OpenGL", "Shader error", "Uniform \"tex\" is not found in shader program");
+    }
+    this->bind();
+    gl::Uniform1i(tex, 0);
 };
 
 ShaderProgram::~ShaderProgram() {
