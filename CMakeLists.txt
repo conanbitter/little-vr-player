@@ -7,6 +7,7 @@ set(EXECUTABLE_OUTPUT_PATH ./${CMAKE_BUILD_TYPE})
 find_package(SDL2 REQUIRED)
 find_package(glLoadGen REQUIRED)
 find_package(STB REQUIRED)
+find_package(libav REQUIRED)
 
 add_executable(lvrp
     ${GL_LOAD_GEN_DIR}/gl/gl_core_3_2.cpp
@@ -21,6 +22,8 @@ add_executable(lvrp
     src/graphics.cpp
     src/textures.hpp
     src/textures.cpp
+    src/video.hpp
+    src/video.cpp
 )
 
 target_include_directories(lvrp
@@ -28,15 +31,21 @@ target_include_directories(lvrp
         ${GL_LOAD_GEN_DIR}
         ${SDL2_INCLUDE_DIR_64}
         ${STB_INCLUDE_DIR}
+        ${LIBAV_INCLUDE_DIR}
 )
 
 target_link_directories(lvrp
     PUBLIC
         ${SDL2_LIBRARY_64}
+        ${LIBAV_LIBRARY}
 )
 
 target_link_libraries(lvrp
     SDL2
     SDL2main
     opengl32
+    avcodec
+    avformat
+    swscale
+    avutil
 )

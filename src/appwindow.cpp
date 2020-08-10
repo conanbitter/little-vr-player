@@ -6,6 +6,7 @@
 #include "graphics.hpp"
 #include "shaders.hpp"
 #include "textures.hpp"
+#include "video.hpp"
 
 const string vertexShaderCode = R"(
     #version 410
@@ -56,6 +57,8 @@ AppWindow::AppWindow(int width, int height) {
         throw AppException("SDL", "Error creating context", getSDLError());
     }
 
+    //SDL_GL_SetSwapInterval(0);
+
     gl::exts::LoadTest glLoadResult = gl::sys::LoadFunctions();
     if (!glLoadResult) {
         throw AppException("OpenGL", "Error in glLoad");
@@ -80,22 +83,22 @@ void AppWindow::run() {
         -0.5,
         0.0,
         0.0,
-        0.0,
+        1.0,
         -0.5,
         0.5,
         0.0,
         0.0,
-        1.0,
+        0.0,
         0.5,
         0.5,
         0.0,
         1.0,
-        1.0,
+        0.0,
         0.5,
         -0.5,
         0.0,
         1.0,
-        0.0,
+        1.0,
     };
 
     GLuint quadIndex[] = {0, 1, 2, 0, 2, 3};
@@ -107,7 +110,12 @@ void AppWindow::run() {
     shader.bind();
 
     Texture splash;
-    splash.loadFromFile("splash.png");
+    //splash.loadFromFile("splash.png");
+
+    VideoFile vfile("bbb_sunflower_2160p_60fps_normal.mp4");
+    int videoWidth;
+    int videoHeight;
+    vfile.getSize(videoWidth, videoHeight);
 
     SDL_Event event;
     bool working = true;
@@ -119,6 +127,7 @@ void AppWindow::run() {
                     break;
             }
         }
+        splash.loadFromMemory(videoWidth, videoHeight, vfile.fetchFrame());
 
         gl::Clear(gl::COLOR_BUFFER_BIT);
 
