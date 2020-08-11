@@ -64,7 +64,7 @@ GLuint ShaderProgram::compileShader(string source, GLenum shaderType) {
     return shader;
 }
 
-ShaderProgram::ShaderProgram(string vertexShader, string fragmentShader) {
+ShaderProgram::ShaderProgram(const string &vertexShader, const string &fragmentShader) {
     program = gl::CreateProgram();
 
     GLuint compiledVertexShader = compileShader(vertexShader, gl::VERTEX_SHADER);

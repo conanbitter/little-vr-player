@@ -1,6 +1,6 @@
 #include "graphics.hpp"
 
-Graphics::Graphics() {
+Graphics::Graphics() : meshSize{0} {
     gl::Enable(gl::BLEND);
     gl::Disable(gl::DEPTH_TEST);
     gl::PixelStorei(gl::UNPACK_ALIGNMENT, 1);

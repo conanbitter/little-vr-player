@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-AppException::AppException(string component, string error, string description) {
+AppException::AppException(const string& component, const string& error, const string& description) {
     stringstream buf;
     buf << "[" << component << "] " << error;
     if (description.length() > 0) {

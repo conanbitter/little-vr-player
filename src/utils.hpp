@@ -7,7 +7,7 @@ using namespace std;
 struct AppException : public std::exception {
     string message;
 
-    AppException(string component, string error, string description = "");
+    AppException(const string& component, const string& error, const string& description = "");
 
     const char* what() const noexcept override;
 };

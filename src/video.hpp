@@ -25,7 +25,7 @@ class VideoFile {
     int height;
 
    public:
-    VideoFile(string filename);
+    explicit VideoFile(string filename);
     ~VideoFile();
     void* fetchFrame();
     void getSize(int& w, int& h) {

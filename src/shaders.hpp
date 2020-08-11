@@ -15,7 +15,7 @@ class ShaderProgram {
     GLuint program;
 
    public:
-    ShaderProgram(string vertexShader, string fragmentShader);
+    ShaderProgram(const string& vertexShader, const string& fragmentShader);
     ~ShaderProgram();
     void bind();
 
