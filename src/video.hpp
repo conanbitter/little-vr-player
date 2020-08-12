@@ -17,7 +17,7 @@ class VideoFile {
     AVCodecContext* codecContext;
     AVPacket* packet;
     AVFrame* frame;
-    SwsContext* convertContext;
+    struct SwsContext* convertContext;
     uint8_t* rgb_data[4];
     int rgb_linesize[4];
     int videoIndex;
