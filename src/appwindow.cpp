@@ -57,7 +57,7 @@ AppWindow::AppWindow(int width, int height) {
         throw AppException("SDL", "Error creating context", getSDLError());
     }
 
-    //SDL_GL_SetSwapInterval(0);
+    SDL_GL_SetSwapInterval(0);
 
     gl::exts::LoadTest glLoadResult = gl::sys::LoadFunctions();
     if (!glLoadResult) {
@@ -117,6 +117,8 @@ void AppWindow::run() {
     int videoHeight;
     vfile.getSize(videoWidth, videoHeight);
 
+    splash.loadFromMemory(videoWidth, videoHeight, vfile.fetchFrame());
+
     SDL_Event event;
     bool working = true;
     while (working) {
@@ -128,6 +130,7 @@ void AppWindow::run() {
             }
         }
         splash.loadFromMemory(videoWidth, videoHeight, vfile.fetchFrame());
+        //vfile.fetchFrame();
 
         gl::Clear(gl::COLOR_BUFFER_BIT);
 
@@ -135,7 +138,7 @@ void AppWindow::run() {
         graphics.drawMesh();
 
         SDL_GL_SwapWindow(window);
-        SDL_Delay(5);
+        //SDL_Delay(5);
     }
 }
 

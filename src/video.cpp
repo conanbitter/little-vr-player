@@ -126,18 +126,19 @@ void* VideoFile::fetchFrame() {
                     break;
                 }
 
-                sws_scale(
+                /*sws_scale(
                     convertContext,
                     (uint8_t const* const*)frame->data,
                     frame->linesize,
                     0,
                     codecContext->height,
                     rgb_data,
-                    rgb_linesize);
+                    rgb_linesize);*/
 
                 //saveFrame(rgb_data, rgb_linesize, codecContext->width, codecContext->height, 0);
                 //return nullptr;
-                return rgb_data[0];
+                //return rgb_data[0];
+                return frame->data[0];
             }
         }
     }

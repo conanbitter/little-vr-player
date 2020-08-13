@@ -32,12 +32,14 @@ target_include_directories(lvrp
         ${SDL2_INCLUDE_DIR_64}
         ${STB_INCLUDE_DIR}
         ${LIBAV_INCLUDE_DIR}
+        "D:/Program Files/easy_profiler/include"
 )
 
 target_link_directories(lvrp
     PUBLIC
         ${SDL2_LIBRARY_64}
         ${LIBAV_LIBRARY}
+        "D:/Program Files/easy_profiler/lib"
 )
 
 target_link_libraries(lvrp
@@ -48,4 +50,5 @@ target_link_libraries(lvrp
     avformat
     swscale
     avutil
+    easy_profiler
 )

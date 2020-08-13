@@ -1,5 +1,7 @@
 #include "textures.hpp"
 
+#include <easy/profiler.h>
+
 #include <gl/gl_core_3_2.hpp>
 
 #include "utils.hpp"
@@ -24,10 +26,22 @@ Texture::~Texture() {
 }
 
 void Texture::loadFromMemory(int width, int height, const void* data) {
+    EASY_FUNCTION(profiler::colors::Magenta);
     this->bind();
-    gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB, width, height, 0, gl::RGB, gl::UNSIGNED_BYTE, data);
-    this->width = width;
-    this->height = height;
+    if (this->width == 0) {
+        //gl::PixelStorei(gl::UNPACK_ALIGNMENT, 1);
+        //gl::PixelStorei(gl::UNPACK_ROW_LENGTH, width);
+        gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB, width, height, 0, gl::RED, gl::UNSIGNED_BYTE, data);
+        this->width = width;
+        this->height = height;
+    } else {
+        //gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB, width, height, 0, gl::RED, gl::UNSIGNED_BYTE, data);
+        //gl::PixelStorei(gl::UNPACK_ALIGNMENT, 1);
+        //gl::PixelStorei(gl::UNPACK_ROW_LENGTH, width);
+        EASY_BLOCK("Pixel transfer");
+        gl::TexSubImage2D(gl::TEXTURE_2D, 0, 0, 0, this->width, this->height, gl::RED, gl::UNSIGNED_BYTE, data);
+        EASY_END_BLOCK;
+    }
 }
 
 void Texture::loadFromFile(string filename) {
