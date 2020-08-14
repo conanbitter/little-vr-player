@@ -1,4 +1,7 @@
+#define BUILD_WITH_EASY_PROFILER
 #include "appwindow.hpp"
+
+#include <easy/profiler.h>
 
 #include <gl/gl_core_3_2.hpp>
 #include <string>
@@ -122,6 +125,8 @@ void AppWindow::run() {
     SDL_Event event;
     bool working = true;
     while (working) {
+        EASY_BLOCK("Frame");
+        EASY_BLOCK("Poll Event");
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
                 case SDL_QUIT:
@@ -129,16 +134,21 @@ void AppWindow::run() {
                     break;
             }
         }
+        EASY_END_BLOCK;
+        EASY_BLOCK("Texture Load");
         splash.loadFromMemory(videoWidth, videoHeight, vfile.fetchFrame());
         //vfile.fetchFrame();
-
+        EASY_END_BLOCK;
+        EASY_BLOCK("Draw");
         gl::Clear(gl::COLOR_BUFFER_BIT);
 
         splash.bind();
         graphics.drawMesh();
 
         SDL_GL_SwapWindow(window);
+        EASY_END_BLOCK;
         //SDL_Delay(5);
+        EASY_END_BLOCK;
     }
 }
 

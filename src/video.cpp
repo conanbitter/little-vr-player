@@ -4,6 +4,8 @@ extern "C" {
 #include <libavutil/imgutils.h>
 #include <libswscale/swscale.h>
 }
+#define BUILD_WITH_EASY_PROFILER
+#include <easy/profiler.h>
 
 #include <iostream>
 
@@ -108,17 +110,27 @@ VideoFile::~VideoFile() {
     avformat_close_input(&formatContext);
 }
 
+int my_read_frame(AVFormatContext* s, AVPacket* pkt) {
+    EASY_FUNCTION();
+    return av_read_frame(s, pkt);
+}
+
 void* VideoFile::fetchFrame() {
-    while (av_read_frame(formatContext, packet) >= 0) {
+    EASY_FUNCTION();
+    while (my_read_frame(formatContext, packet) >= 0) {
         if (packet->stream_index == videoIndex) {
+            EASY_BLOCK("avcodec_send_packet");
             int resp = avcodec_send_packet(codecContext, packet);
             if (resp < 0) {
                 cout << "Error sending data to codec" << endl;
                 continue;
             }
+            EASY_END_BLOCK;
 
             while (resp >= 0) {
+                EASY_BLOCK("Decode");
                 resp = avcodec_receive_frame(codecContext, frame);
+                EASY_END_BLOCK;
                 if (resp == AVERROR(EAGAIN) || resp == AVERROR_EOF) {
                     break;
                 } else if (resp < 0) {
@@ -126,14 +138,16 @@ void* VideoFile::fetchFrame() {
                     break;
                 }
 
-                /*sws_scale(
+                EASY_BLOCK("Convert");
+                sws_scale(
                     convertContext,
                     (uint8_t const* const*)frame->data,
                     frame->linesize,
                     0,
                     codecContext->height,
                     rgb_data,
-                    rgb_linesize);*/
+                    rgb_linesize);
+                EASY_END_BLOCK;
 
                 //saveFrame(rgb_data, rgb_linesize, codecContext->width, codecContext->height, 0);
                 //return nullptr;

@@ -10,10 +10,9 @@ const int SCREEN_HEIGHT = 720;
 
 int main(int argc, char **argv) {
     profiler::startListen();
+    EASY_MAIN_THREAD;
     try {
-        EASY_BLOCK("Calculating sum");
         AppWindow window(SCREEN_WIDTH, SCREEN_HEIGHT);
-        EASY_END_BLOCK;
         window.run();
     } catch (AppException &e) {
         AppWindow::messageBox(e.message);

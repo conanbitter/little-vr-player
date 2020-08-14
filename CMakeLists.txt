@@ -39,7 +39,7 @@ target_link_directories(lvrp
     PUBLIC
         ${SDL2_LIBRARY_64}
         ${LIBAV_LIBRARY}
-        "D:/Program Files/easy_profiler/lib"
+        "D:/Program Files/easy_profiler/gcc/lib"
 )
 
 target_link_libraries(lvrp

@@ -1,5 +1,5 @@
 #include "textures.hpp"
-
+#define BUILD_WITH_EASY_PROFILER
 #include <easy/profiler.h>
 
 #include <gl/gl_core_3_2.hpp>
@@ -26,8 +26,10 @@ Texture::~Texture() {
 }
 
 void Texture::loadFromMemory(int width, int height, const void* data) {
-    EASY_FUNCTION(profiler::colors::Magenta);
+    EASY_FUNCTION();
+    EASY_BLOCK("Texture bind");
     this->bind();
+    EASY_END_BLOCK;
     if (this->width == 0) {
         //gl::PixelStorei(gl::UNPACK_ALIGNMENT, 1);
         //gl::PixelStorei(gl::UNPACK_ROW_LENGTH, width);
