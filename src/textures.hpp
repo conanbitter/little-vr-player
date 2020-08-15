@@ -7,18 +7,21 @@ using namespace std;
 
 class Texture {
    private:
-    int width;
-    int height;
+    int _width;
+    int _height;
     GLuint handle;
+    GLuint pbo;
 
    public:
-    Texture();
+    Texture(int width, int height);
     ~Texture();
     void loadFromFile(string filename);
-    void loadFromMemory(int width, int height, const void* data);
+    void loadFromMemory(const void* data);
+    void* lock();
+    void unlock();
     void bind();
-    void getSize(int& w, int& h) {
-        w = width;
-        h = height;
+    void getSize(int& width, int& height) {
+        width = _width;
+        height = _height;
     }
 };

@@ -9,7 +9,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-Texture::Texture() : width{0}, height{0} {
+Texture::Texture(int width, int height) : _width{width}, _height{height} {
     gl::GenTextures(1, &handle);
     gl::ActiveTexture(gl::TEXTURE0);
 
@@ -17,33 +17,52 @@ Texture::Texture() : width{0}, height{0} {
 
     gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR);
     gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR);
+
+    gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB, width, height, 0, gl::RGB, gl::UNSIGNED_BYTE, nullptr);
+
+    gl::GenBuffers(1, &pbo);
+    gl::BindBuffer(gl::PIXEL_UNPACK_BUFFER, pbo);
+    gl::BufferData(gl::PIXEL_UNPACK_BUFFER, width * height * 3, nullptr, gl::STREAM_DRAW);
 }
 
 Texture::~Texture() {
     if (gl::IsTexture(handle)) {
         gl::DeleteTextures(1, &handle);
     }
+    if (gl::IsBuffer(pbo)) {
+        gl::DeleteBuffers(1, &pbo);
+    }
 }
 
-void Texture::loadFromMemory(int width, int height, const void* data) {
+void Texture::loadFromMemory(const void* data) {
     EASY_FUNCTION();
-    EASY_BLOCK("Texture bind");
-    this->bind();
+    gl::BindBuffer(gl::PIXEL_UNPACK_BUFFER, pbo);
+    gl::BindTexture(gl::TEXTURE_2D, handle);
+    EASY_BLOCK("Pixel transfer to buffer");
+    void* mappedBuffer = gl::MapBufferRange(gl::PIXEL_UNPACK_BUFFER, 0, _width * _height * 3, gl::MAP_WRITE_BIT | gl::MAP_INVALIDATE_BUFFER_BIT);
+    memcpy(mappedBuffer, data, _width * _height * 3);
+    gl::UnmapBuffer(gl::PIXEL_UNPACK_BUFFER);
+    //gl::BufferData(gl::PIXEL_UNPACK_BUFFER, _width * _height * 3, data, gl::STREAM_DRAW);
     EASY_END_BLOCK;
-    if (this->width == 0) {
-        //gl::PixelStorei(gl::UNPACK_ALIGNMENT, 1);
-        //gl::PixelStorei(gl::UNPACK_ROW_LENGTH, width);
-        gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB, width, height, 0, gl::RED, gl::UNSIGNED_BYTE, data);
-        this->width = width;
-        this->height = height;
-    } else {
-        //gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB, width, height, 0, gl::RED, gl::UNSIGNED_BYTE, data);
-        //gl::PixelStorei(gl::UNPACK_ALIGNMENT, 1);
-        //gl::PixelStorei(gl::UNPACK_ROW_LENGTH, width);
-        EASY_BLOCK("Pixel transfer");
-        gl::TexSubImage2D(gl::TEXTURE_2D, 0, 0, 0, this->width, this->height, gl::RED, gl::UNSIGNED_BYTE, data);
-        EASY_END_BLOCK;
-    }
+    EASY_BLOCK("Pixel transfer to texture");
+    gl::TexSubImage2D(gl::TEXTURE_2D, 0, 0, 0, _width, _height, gl::RED, gl::UNSIGNED_BYTE, nullptr);
+    EASY_END_BLOCK;
+}
+
+void* Texture::lock() {
+    EASY_FUNCTION();
+    gl::BindBuffer(gl::PIXEL_UNPACK_BUFFER, pbo);
+    gl::BindTexture(gl::TEXTURE_2D, handle);
+    return gl::MapBufferRange(gl::PIXEL_UNPACK_BUFFER, 0, _width * _height * 3, gl::MAP_WRITE_BIT | gl::MAP_INVALIDATE_BUFFER_BIT);
+}
+
+void Texture::unlock() {
+    EASY_FUNCTION();
+    gl::UnmapBuffer(gl::PIXEL_UNPACK_BUFFER);
+    //gl::BufferData(gl::PIXEL_UNPACK_BUFFER, _width * _height * 3, data, gl::STREAM_DRAW);
+    EASY_BLOCK("Pixel transfer to texture");
+    gl::TexSubImage2D(gl::TEXTURE_2D, 0, 0, 0, _width, _height, gl::RED, gl::UNSIGNED_BYTE, nullptr);
+    EASY_END_BLOCK;
 }
 
 void Texture::loadFromFile(string filename) {
@@ -54,7 +73,11 @@ void Texture::loadFromFile(string filename) {
         throw AppException("STB", "Error loading texture", string(stbi_failure_reason()));
     }
 
-    loadFromMemory(w, h, data);
+    gl::BindBuffer(gl::PIXEL_UNPACK_BUFFER, 0);
+    gl::BindTexture(gl::TEXTURE_2D, handle);
+    gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB, w, h, 0, gl::RGB, gl::UNSIGNED_BYTE, data);
+    _width = w;
+    _height = h;
 
     stbi_image_free(data);
 }

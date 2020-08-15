@@ -34,7 +34,8 @@ const string fragmentShaderCode = R"(
     layout(location = 0) out vec4 outputColor;
 
     void main() {
-        outputColor = texture(tex, fragUV);
+        float c = texture(tex, fragUV).r;
+        outputColor = vec4(c,c,c,1);
     }
 )";
 
@@ -112,15 +113,15 @@ void AppWindow::run() {
     ShaderProgram shader(vertexShaderCode, fragmentShaderCode);
     shader.bind();
 
-    Texture splash;
     //splash.loadFromFile("splash.png");
 
-    VideoFile vfile("bbb_sunflower_2160p_60fps_normal.mp4");
+    VideoFile vfile("bbb_sunflower_2160p_60fps_normal.mp4");  //bbb_sunflower_1080p_30fps_normal.mp4
     int videoWidth;
     int videoHeight;
     vfile.getSize(videoWidth, videoHeight);
+    Texture splash(videoWidth, videoHeight);
 
-    splash.loadFromMemory(videoWidth, videoHeight, vfile.fetchFrame());
+    splash.loadFromMemory(vfile.fetchFrame2());
 
     SDL_Event event;
     bool working = true;
@@ -136,7 +137,11 @@ void AppWindow::run() {
         }
         EASY_END_BLOCK;
         EASY_BLOCK("Texture Load");
-        splash.loadFromMemory(videoWidth, videoHeight, vfile.fetchFrame());
+        //void* data = vfile.fetchFrame2();
+        //memcpy(splash.lock(), data, videoWidth * videoHeight * 3);
+        //splash.unlock();
+        vfile.fetchFrame3(splash.lock());
+        splash.unlock();
         //vfile.fetchFrame();
         EASY_END_BLOCK;
         EASY_BLOCK("Draw");
