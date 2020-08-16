@@ -106,6 +106,7 @@ void AppWindow::run() {
 
     Graphics graphics;
     graphics.loadMesh(quadVertex, 4, quadIndex, 6);
+    saveToObj("test.obj", quadVertex, 4, quadIndex, 6);
 
     ShaderProgram shader(vertexShaderCode, fragmentShaderCode);
     shader.bind();
