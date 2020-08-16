@@ -1,3 +1,4 @@
+#include <iostream>
 #include <gl/gl_core_3_2.hpp>
 #include <mpv/client.h>
 #include <mpv/render_gl.h>
@@ -11,6 +12,10 @@ static int one = 1;
 static void *getProcAddress(void *fn_ctx, const char *name) {
     return SDL_GL_GetProcAddress(name);
 }
+
+const uint64_t PROPERTY_WIDTH = 1;
+const uint64_t PROPERTY_HEIGHT = 2;
+const uint64_t PROPERTY_DURATION = 3;
 
 Player::Player() {
     mpv = mpv_create();
@@ -43,8 +48,8 @@ Player::Player() {
     mpv_set_wakeup_callback(mpv, Player::playerEventCallback, this);
     mpv_render_context_set_update_callback(renderContext, Player::renderUpdateCallback, this);
 
-    _width = 1280;
-    _height = 720;
+    _width = 10;
+    _height = 10;
 
     fboSettings.fbo = 0;
     fboSettings.w = _width;
@@ -54,6 +59,10 @@ Player::Player() {
     renderParams[0] = {MPV_RENDER_PARAM_OPENGL_FBO, &fboSettings};
     renderParams[1] = {MPV_RENDER_PARAM_FLIP_Y, &one};
     renderParams[2] = {MPV_RENDER_PARAM_INVALID, nullptr};
+
+    mpv_observe_property(mpv, PROPERTY_WIDTH, "width", MPV_FORMAT_INT64);
+    mpv_observe_property(mpv, PROPERTY_HEIGHT, "height", MPV_FORMAT_INT64);
+    mpv_observe_property(mpv, PROPERTY_DURATION, "duration", MPV_FORMAT_DOUBLE);
 }
 
 Player::~Player() {
@@ -91,7 +100,46 @@ bool Player::processMessages(SDL_Event &event) {
             mpv_event *mp_event = mpv_wait_event(mpv, 0);
             if (mp_event->event_id == MPV_EVENT_NONE)
                 break;
+            if (mp_event->event_id == MPV_EVENT_PROPERTY_CHANGE) {
+                mpv_event_property *prop = (mpv_event_property *)mp_event->data;
+                bool resized = false;
+                switch (mp_event->reply_userdata) {
+                    case PROPERTY_WIDTH:
+                        if (prop->format == MPV_FORMAT_INT64) {
+                            int64_t newWidth = *(int64_t *)prop->data;
+                            if (newWidth != _width) {
+                                _width = newWidth;
+                                resized = true;
+                            }
+                        }
+                        break;
+                    case PROPERTY_HEIGHT:
+                        if (prop->format == MPV_FORMAT_INT64) {
+                            int64_t newHeight = *(int64_t *)prop->data;
+                            if (newHeight != _height) {
+                                _height = newHeight;
+                                resized = true;
+                            }
+                        }
+                        break;
+                    case PROPERTY_DURATION:
+                        if (prop->format == MPV_FORMAT_DOUBLE) {
+                            double newDuration = *(double *)prop->data;
+                            std::cout << newDuration << std::endl;
+                        }
+                        break;
+                }
+                if (resized) {
+                    resize();
+                }
+            }
         }
     }
     return redraw;
+}
+
+void Player::resize() {
+    std::cout << "New size: " << _width << "x" << _height << std::endl;
+    fboSettings.w = _width;
+    fboSettings.h = _height;
 }

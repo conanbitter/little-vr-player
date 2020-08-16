@@ -18,6 +18,7 @@ class Player {
     mpv_opengl_fbo fboSettings;
     int _width;
     int _height;
+    void resize();
 
    public:
     Player();
