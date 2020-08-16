@@ -51,7 +51,27 @@ Player::Player() {
     _width = 10;
     _height = 10;
 
-    fboSettings.fbo = 0;
+    gl::GenFramebuffers(1, &fbo);
+    gl::BindFramebuffer(gl::FRAMEBUFFER, fbo);
+
+    gl::GenTextures(1, &texture);
+    gl::ActiveTexture(gl::TEXTURE0);
+    gl::BindTexture(gl::TEXTURE_2D, texture);
+    gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MIN_FILTER, gl::LINEAR);
+    gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_MAG_FILTER, gl::LINEAR);
+    gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE);
+    gl::TexParameteri(gl::TEXTURE_2D, gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE);
+    gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB, _width, _height, 0, gl::RGB, gl::UNSIGNED_BYTE, nullptr);
+
+    gl::FramebufferTexture2D(gl::FRAMEBUFFER, gl::COLOR_ATTACHMENT0, gl::TEXTURE_2D, texture, 0);
+    gl::DrawBuffer(gl::COLOR_ATTACHMENT0);
+
+    if (gl::CheckFramebufferStatus(gl::FRAMEBUFFER) != gl::FRAMEBUFFER_COMPLETE) {
+        throw AppException("MPV", "Error creating framebuffer");
+    }
+    cout << fbo << endl;
+
+    fboSettings.fbo = fbo;
     fboSettings.w = _width;
     fboSettings.h = _height;
     fboSettings.internal_format = gl::RGB8;
@@ -68,6 +88,16 @@ Player::Player() {
 Player::~Player() {
     mpv_render_context_free(renderContext);
     mpv_destroy(mpv);
+    if (gl::IsTexture(texture)) {
+        gl::DeleteTextures(1, &texture);
+    }
+    if (gl::IsFramebuffer(fbo)) {
+        gl::DeleteFramebuffers(1, &fbo);
+    }
+}
+
+void Player::bindTexture() {
+    gl::BindTexture(gl::TEXTURE_2D, texture);
 }
 
 void Player::openFile(string filename) {
@@ -142,4 +172,6 @@ void Player::resize() {
     std::cout << "New size: " << _width << "x" << _height << std::endl;
     fboSettings.w = _width;
     fboSettings.h = _height;
+    gl::BindTexture(gl::TEXTURE_2D, texture);
+    gl::TexImage2D(gl::TEXTURE_2D, 0, gl::RGB, _width, _height, 0, gl::RGB, gl::UNSIGNED_BYTE, nullptr);
 }

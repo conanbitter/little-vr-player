@@ -84,22 +84,22 @@ void AppWindow::run() {
         -0.5,
         0.0,
         0.0,
-        1.0,
+        0.0,
         -0.5,
         0.5,
         0.0,
         0.0,
-        0.0,
+        1.0,
         0.5,
         0.5,
         0.0,
         1.0,
-        0.0,
+        1.0,
         0.5,
         -0.5,
         0.0,
         1.0,
-        1.0,
+        0.0,
     };
 
     GLuint quadIndex[] = {0, 1, 2, 0, 2, 3};
@@ -111,7 +111,7 @@ void AppWindow::run() {
     shader.bind();
 
     Texture splash;
-    //splash.loadFromFile("splash.png");
+    splash.loadFromFile("splash.png");
 
     Player player;
     player.openFile("bbb_sunflower_2160p_60fps_normal.mp4");
@@ -135,10 +135,18 @@ void AppWindow::run() {
         }
 
         if (needRedraw) {
-            gl::Clear(gl::COLOR_BUFFER_BIT);
-
             player.render();
         }
+
+        //gl::BindFramebuffer(gl::FRAMEBUFFER, 0);
+        gl::ClearColor(0.15f, 0.15f, 0.15f, 1.0f);
+        gl::Clear(gl::COLOR_BUFFER_BIT);
+        shader.bind();
+        //splash.bind();
+        player.bindTexture();
+        gl::Viewport(0, 0, 1280, 720);
+        gl::Scissor(0, 0, 1280, 720);
+        graphics.drawMesh();
 
         SDL_GL_SwapWindow(window);
         SDL_Delay(5);
