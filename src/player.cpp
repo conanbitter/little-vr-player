@@ -58,7 +58,7 @@ Player::Player() {
 
 Player::~Player() {
     mpv_render_context_free(renderContext);
-    mpv_detach_destroy(mpv);
+    mpv_destroy(mpv);
 }
 
 void Player::openFile(string filename) {
