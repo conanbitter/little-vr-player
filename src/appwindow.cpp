@@ -7,6 +7,7 @@
 #include "shaders.hpp"
 #include "textures.hpp"
 #include "video.hpp"
+#include "player.hpp"
 
 const string vertexShaderCode = R"(
     #version 410
@@ -112,27 +113,32 @@ void AppWindow::run() {
     Texture splash;
     //splash.loadFromFile("splash.png");
 
-    VideoFile vfile("bbb_sunflower_2160p_60fps_normal.mp4");
-    int videoWidth;
-    int videoHeight;
-    vfile.getSize(videoWidth, videoHeight);
+    Player player;
+    player.openFile("bbb_sunflower_2160p_60fps_normal.mp4");
 
     SDL_Event event;
     bool working = true;
     while (working) {
+        bool needRedraw = false;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
                 case SDL_QUIT:
                     working = false;
                     break;
+                case SDL_WINDOWEVENT:
+                    if (event.window.event == SDL_WINDOWEVENT_EXPOSED)
+                        needRedraw = true;
+                    break;
+                default:
+                    needRedraw = needRedraw || player.processMessages(event);
             }
         }
-        splash.loadFromMemory(videoWidth, videoHeight, vfile.fetchFrame());
 
-        gl::Clear(gl::COLOR_BUFFER_BIT);
+        if (needRedraw) {
+            gl::Clear(gl::COLOR_BUFFER_BIT);
 
-        splash.bind();
-        graphics.drawMesh();
+            player.render();
+        }
 
         SDL_GL_SwapWindow(window);
         SDL_Delay(5);

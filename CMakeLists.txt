@@ -25,6 +25,8 @@ add_executable(lvrp
     src/textures.cpp
     src/video.hpp
     src/video.cpp
+    src/player.hpp
+    src/player.cpp
 )
 
 target_include_directories(lvrp
@@ -51,4 +53,5 @@ target_link_libraries(lvrp
     avformat
     swscale
     avutil
+    mpv
 )
