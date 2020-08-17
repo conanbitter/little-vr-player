@@ -9,6 +9,7 @@ find_package(glLoadGen REQUIRED)
 find_package(STB REQUIRED)
 find_package(libav REQUIRED)
 find_package(libmpv REQUIRED)
+find_package(glm REQUIRED)
 
 add_executable(lvrp
     ${GL_LOAD_GEN_DIR}/gl/gl_core_3_2.cpp
@@ -27,6 +28,8 @@ add_executable(lvrp
     src/video.cpp
     src/player.hpp
     src/player.cpp
+    src/camera.hpp
+    src/camera.cpp
 )
 
 target_include_directories(lvrp
@@ -36,6 +39,7 @@ target_include_directories(lvrp
         ${MPV_INCLUDE_DIR}
         ${STB_INCLUDE_DIR}
         ${LIBAV_INCLUDE_DIR}
+        ${GLM_INCLUDE_DIR}
 )
 
 target_link_directories(lvrp
