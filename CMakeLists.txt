@@ -8,6 +8,7 @@ find_package(SDL2 REQUIRED)
 find_package(glLoadGen REQUIRED)
 find_package(STB REQUIRED)
 find_package(libav REQUIRED)
+find_package(libmpv REQUIRED)
 
 add_executable(lvrp
     ${GL_LOAD_GEN_DIR}/gl/gl_core_3_2.cpp
@@ -24,12 +25,15 @@ add_executable(lvrp
     src/textures.cpp
     src/video.hpp
     src/video.cpp
+    src/player.hpp
+    src/player.cpp
 )
 
 target_include_directories(lvrp
     PUBLIC
         ${GL_LOAD_GEN_DIR}
         ${SDL2_INCLUDE_DIR_64}
+        ${MPV_INCLUDE_DIR}
         ${STB_INCLUDE_DIR}
         ${LIBAV_INCLUDE_DIR}
 )
@@ -37,6 +41,7 @@ target_include_directories(lvrp
 target_link_directories(lvrp
     PUBLIC
         ${SDL2_LIBRARY_64}
+        ${MPV_LIBRARY}
         ${LIBAV_LIBRARY}
 )
 
@@ -48,4 +53,5 @@ target_link_libraries(lvrp
     avformat
     swscale
     avutil
+    mpv
 )

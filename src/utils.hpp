@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+#include <gl/gl_core_3_2.hpp>
+
+#include "graphics.hpp"
 
 using namespace std;
 
@@ -11,3 +14,6 @@ struct AppException : public std::exception {
 
     const char* what() const noexcept override;
 };
+
+void saveToObj(string filename, GLfloat* vertexData, int vertexCount, GLuint* indexData, int indexCount);
+void createDome(float r, Graphics& graphics);

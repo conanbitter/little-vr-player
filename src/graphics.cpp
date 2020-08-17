@@ -37,5 +37,6 @@ void Graphics::loadMesh(GLfloat* vertexData, int vertexCount, GLuint* indexData,
 }
 
 void Graphics::drawMesh() {
+    gl::BindVertexArray(vao);
     gl::DrawElements(gl::TRIANGLES, meshSize, gl::UNSIGNED_INT, nullptr);
 }

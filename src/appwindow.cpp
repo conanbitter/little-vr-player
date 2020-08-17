@@ -7,6 +7,7 @@
 #include "shaders.hpp"
 #include "textures.hpp"
 #include "video.hpp"
+#include "player.hpp"
 
 const string vertexShaderCode = R"(
     #version 410
@@ -31,7 +32,7 @@ const string fragmentShaderCode = R"(
     layout(location = 0) out vec4 outputColor;
 
     void main() {
-        outputColor = texture(tex, fragUV);
+        outputColor = texture(tex, vec2(fragUV.x,fragUV.y));
     }
 )";
 
@@ -83,55 +84,71 @@ void AppWindow::run() {
         -0.5,
         0.0,
         0.0,
-        1.0,
+        0.0,
         -0.5,
         0.5,
         0.0,
         0.0,
-        0.0,
+        1.0,
         0.5,
         0.5,
         0.0,
         1.0,
-        0.0,
+        1.0,
         0.5,
         -0.5,
         0.0,
         1.0,
-        1.0,
+        0.0,
     };
 
     GLuint quadIndex[] = {0, 1, 2, 0, 2, 3};
 
     Graphics graphics;
-    graphics.loadMesh(quadVertex, 4, quadIndex, 6);
+    //graphics.loadMesh(quadVertex, 4, quadIndex, 6);
+    //saveToObj("test.obj", quadVertex, 4, quadIndex, 6);
+    createDome(1.0f, graphics);
 
     ShaderProgram shader(vertexShaderCode, fragmentShaderCode);
     shader.bind();
 
     Texture splash;
-    //splash.loadFromFile("splash.png");
+    splash.loadFromFile("splash.png");
 
-    VideoFile vfile("bbb_sunflower_2160p_60fps_normal.mp4");
-    int videoWidth;
-    int videoHeight;
-    vfile.getSize(videoWidth, videoHeight);
+    Player player;
+    player.openFile("bbb_sunflower_2160p_60fps_normal.mp4");
 
     SDL_Event event;
     bool working = true;
     while (working) {
+        bool needRedraw = false;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
                 case SDL_QUIT:
                     working = false;
                     break;
+                case SDL_WINDOWEVENT:
+                    if (event.window.event == SDL_WINDOWEVENT_EXPOSED)
+                        needRedraw = true;
+                    break;
+                default:
+                    needRedraw = needRedraw || player.processMessages(event);
             }
         }
-        splash.loadFromMemory(videoWidth, videoHeight, vfile.fetchFrame());
 
+        if (needRedraw) {
+            player.render();
+        }
+
+        //gl::BindFramebuffer(gl::FRAMEBUFFER, 0);
+        gl::ClearColor(0.15f, 0.15f, 0.15f, 1.0f);
         gl::Clear(gl::COLOR_BUFFER_BIT);
-
-        splash.bind();
+        shader.bind();
+        //splash.bind();
+        player.bindTexture();
+        gl::Viewport(0, 0, 1280, 720);
+        gl::Scissor(0, 0, 1280, 720);
+        //gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
         graphics.drawMesh();
 
         SDL_GL_SwapWindow(window);
