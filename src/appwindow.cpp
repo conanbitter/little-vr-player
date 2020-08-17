@@ -32,7 +32,7 @@ const string fragmentShaderCode = R"(
     layout(location = 0) out vec4 outputColor;
 
     void main() {
-        outputColor = texture(tex, fragUV);
+        outputColor = texture(tex, vec2(fragUV.x,fragUV.y));
     }
 )";
 
@@ -105,9 +105,9 @@ void AppWindow::run() {
     GLuint quadIndex[] = {0, 1, 2, 0, 2, 3};
 
     Graphics graphics;
-    graphics.loadMesh(quadVertex, 4, quadIndex, 6);
+    //graphics.loadMesh(quadVertex, 4, quadIndex, 6);
     //saveToObj("test.obj", quadVertex, 4, quadIndex, 6);
-    createDome(10.0f);
+    createDome(1.0f, graphics);
 
     ShaderProgram shader(vertexShaderCode, fragmentShaderCode);
     shader.bind();
@@ -148,6 +148,7 @@ void AppWindow::run() {
         player.bindTexture();
         gl::Viewport(0, 0, 1280, 720);
         gl::Scissor(0, 0, 1280, 720);
+        //gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
         graphics.drawMesh();
 
         SDL_GL_SwapWindow(window);

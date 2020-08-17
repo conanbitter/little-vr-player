@@ -53,42 +53,42 @@ const int SEGMENTS_HORISONTAL = 16;
 const int DOME_VERTEX_COUNT = (SEGMENTS_HORISONTAL + 1) * (SEGMENTS_VERTICAL + 1) - 2;
 const int DOME_INDEX_COUNT = SEGMENTS_HORISONTAL * (SEGMENTS_VERTICAL - 1) * 2 * 3;
 
-void createDome(float r) {
+void createDome(float r, Graphics& graphics) {
     GLfloat vertices[DOME_VERTEX_COUNT * 5];
     GLuint indices[DOME_INDEX_COUNT];
 
     int index = 0;
     for (int y = 1; y < SEGMENTS_VERTICAL; y++) {
         float vertAngle = (float)y * (PI / SEGMENTS_VERTICAL);
-        float pz = r * cos(vertAngle);
+        float py = r * cos(vertAngle);
         float lr = r * sin(vertAngle);
 
         for (int x = 0; x <= SEGMENTS_HORISONTAL; x++) {
             float horAngle = x * (PI / SEGMENTS_HORISONTAL);
             float px = lr * cos(horAngle);
-            float py = lr * sin(horAngle);
+            float pz = -lr * sin(horAngle);
 
             vertices[index] = px;      //-r + r * 2 * x / SEGMENTS_HORISONTAL;
             vertices[index + 1] = py;  //-r + r * 2 * y / SEGMENTS_VERTICAL;
             vertices[index + 2] = pz;  //r;
-            vertices[index + 3] = (float)x / SEGMENTS_HORISONTAL;
-            vertices[index + 4] = (float)y / SEGMENTS_VERTICAL;
+            vertices[index + 3] = 1 - (float)x / SEGMENTS_HORISONTAL;
+            vertices[index + 4] = 1 - (float)y / SEGMENTS_VERTICAL;
             index += 5;
         }
     }
     for (int x = 0; x < SEGMENTS_HORISONTAL; x++) {
         vertices[index] = 0.0f;
-        vertices[index + 1] = 0.0f;
-        vertices[index + 2] = r;
-        vertices[index + 3] = ((float)x + 0.5f) / SEGMENTS_HORISONTAL;
+        vertices[index + 1] = r;
+        vertices[index + 2] = 0.0f;
+        vertices[index + 3] = 1 - ((float)x + 0.5f) / SEGMENTS_HORISONTAL;
         vertices[index + 4] = 0.0f;
         index += 5;
     }
     for (int x = 0; x < SEGMENTS_HORISONTAL; x++) {
         vertices[index] = 0.0f;
-        vertices[index + 1] = 0.0f;
-        vertices[index + 2] = -r;
-        vertices[index + 3] = ((float)x + 0.5f) / SEGMENTS_HORISONTAL;
+        vertices[index + 1] = -r;
+        vertices[index + 2] = 0.0f;
+        vertices[index + 3] = 1 - ((float)x + 0.5f) / SEGMENTS_HORISONTAL;
         vertices[index + 4] = 1.0f;
         index += 5;
     }
@@ -123,5 +123,6 @@ void createDome(float r) {
         indices[index + 2] = (SEGMENTS_HORISONTAL + 1) * (SEGMENTS_VERTICAL - 2) + x + 1;
         index += 3;
     }
-    saveToObj("sphere.obj", vertices, DOME_VERTEX_COUNT, indices, DOME_INDEX_COUNT);
+    graphics.loadMesh(vertices, DOME_VERTEX_COUNT, indices, DOME_INDEX_COUNT);
+    //saveToObj("sphere.obj", vertices, DOME_VERTEX_COUNT, indices, DOME_INDEX_COUNT);
 }

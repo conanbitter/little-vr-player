@@ -3,6 +3,8 @@
 #include <string>
 #include <gl/gl_core_3_2.hpp>
 
+#include "graphics.hpp"
+
 using namespace std;
 
 struct AppException : public std::exception {
@@ -14,4 +16,4 @@ struct AppException : public std::exception {
 };
 
 void saveToObj(string filename, GLfloat* vertexData, int vertexCount, GLuint* indexData, int indexCount);
-void createDome(float r);
+void createDome(float r, Graphics& graphics);
