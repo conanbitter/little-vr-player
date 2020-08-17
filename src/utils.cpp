@@ -48,15 +48,17 @@ void saveToObj(string filename, GLfloat* vertexData, int vertexCount, GLuint* in
 }
 
 const float PI = 3.14159265358979f;
-const int SEGMENTS_VERTICAL = 32;
-const int SEGMENTS_HORISONTAL = 32;
+const int SEGMENTS_VERTICAL = 16;
+const int SEGMENTS_HORISONTAL = 16;
+const int DOME_VERTEX_COUNT = (SEGMENTS_HORISONTAL + 1) * (SEGMENTS_VERTICAL + 1) - 2;
+const int DOME_INDEX_COUNT = SEGMENTS_HORISONTAL * (SEGMENTS_VERTICAL - 1) * 2 * 3;
 
 void createDome(float r) {
-    GLfloat vertices[(SEGMENTS_HORISONTAL + 1) * (SEGMENTS_VERTICAL + 1) * 5];
-    GLuint indices[SEGMENTS_HORISONTAL * SEGMENTS_VERTICAL * 2 * 3];
+    GLfloat vertices[DOME_VERTEX_COUNT * 5];
+    GLuint indices[DOME_INDEX_COUNT];
 
     int index = 0;
-    for (int y = 0; y <= SEGMENTS_VERTICAL; y++) {
+    for (int y = 1; y < SEGMENTS_VERTICAL; y++) {
         float vertAngle = (float)y * (PI / SEGMENTS_VERTICAL);
         float pz = r * cos(vertAngle);
         float lr = r * sin(vertAngle);
@@ -74,8 +76,24 @@ void createDome(float r) {
             index += 5;
         }
     }
+    for (int x = 0; x < SEGMENTS_HORISONTAL; x++) {
+        vertices[index] = 0.0f;
+        vertices[index + 1] = 0.0f;
+        vertices[index + 2] = r;
+        vertices[index + 3] = ((float)x + 0.5f) / SEGMENTS_HORISONTAL;
+        vertices[index + 4] = 0.0f;
+        index += 5;
+    }
+    for (int x = 0; x < SEGMENTS_HORISONTAL; x++) {
+        vertices[index] = 0.0f;
+        vertices[index + 1] = 0.0f;
+        vertices[index + 2] = -r;
+        vertices[index + 3] = ((float)x + 0.5f) / SEGMENTS_HORISONTAL;
+        vertices[index + 4] = 1.0f;
+        index += 5;
+    }
     index = 0;
-    for (int y = 0; y < SEGMENTS_VERTICAL; y++) {
+    for (int y = 0; y < SEGMENTS_VERTICAL - 2; y++) {
         for (int x = 0; x < SEGMENTS_HORISONTAL; x++) {
             int p1 = (y + 1) * (SEGMENTS_HORISONTAL + 1) + x;
             int p2 = y * (SEGMENTS_HORISONTAL + 1) + x;
@@ -92,5 +110,18 @@ void createDome(float r) {
             index += 6;
         }
     }
-    saveToObj("sphere.obj", vertices, (SEGMENTS_HORISONTAL + 1) * (SEGMENTS_VERTICAL + 1), indices, SEGMENTS_HORISONTAL * SEGMENTS_VERTICAL * 2 * 3);
+    int offset = (SEGMENTS_HORISONTAL + 1) * (SEGMENTS_VERTICAL - 1);
+    for (int x = 0; x < SEGMENTS_HORISONTAL; x++) {
+        indices[index] = x;
+        indices[index + 1] = offset + x;
+        indices[index + 2] = x + 1;
+        index += 3;
+    }
+    for (int x = 0; x < SEGMENTS_HORISONTAL; x++) {
+        indices[index] = (SEGMENTS_HORISONTAL + 1) * (SEGMENTS_VERTICAL - 2) + x;
+        indices[index + 1] = offset + SEGMENTS_HORISONTAL + x;
+        indices[index + 2] = (SEGMENTS_HORISONTAL + 1) * (SEGMENTS_VERTICAL - 2) + x + 1;
+        index += 3;
+    }
+    saveToObj("sphere.obj", vertices, DOME_VERTEX_COUNT, indices, DOME_INDEX_COUNT);
 }
