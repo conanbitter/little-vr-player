@@ -14,3 +14,4 @@ struct AppException : public std::exception {
 };
 
 void saveToObj(string filename, GLfloat* vertexData, int vertexCount, GLuint* indexData, int indexCount);
+void createDome(float r);
