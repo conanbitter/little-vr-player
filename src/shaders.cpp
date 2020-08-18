@@ -2,6 +2,7 @@
 
 #include <gl/gl_core_3_2.hpp>
 #include <string>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "utils.hpp"
 
@@ -78,13 +79,6 @@ ShaderProgram::ShaderProgram(const string &vertexShader, const string &fragmentS
     if (result != true) {
         throw AppException("OpenGL", "Shader link error", getProgramLog(program));
     }
-
-    GLint tex = gl::GetUniformLocation(program, "tex");
-    if (tex == -1) {
-        throw AppException("OpenGL", "Shader error", "Uniform \"tex\" is not found in shader program");
-    }
-    this->bind();
-    gl::Uniform1i(tex, 0);
 };
 
 ShaderProgram::~ShaderProgram() {
@@ -95,4 +89,56 @@ ShaderProgram::~ShaderProgram() {
 
 void ShaderProgram::bind() {
     gl::UseProgram(program);
+}
+
+GLint ShaderProgram::getUniformHandle(string name) {
+    return gl::GetUniformLocation(program, name.c_str());
+}
+
+void ShaderProgram::setUniform(GLint uniform, GLint value) {
+    if (uniform != -1) {
+        gl::UseProgram(program);
+        gl::Uniform1i(uniform, value);
+    }
+}
+
+void ShaderProgram::setUniform(GLint uniform, GLfloat value) {
+    if (uniform != -1) {
+        gl::UseProgram(program);
+        gl::Uniform1f(uniform, value);
+    }
+}
+
+void ShaderProgram::setUniform(GLint uniform, glm::mat4 &matrix) {
+    if (uniform != -1) {
+        gl::UseProgram(program);
+        gl::UniformMatrix4fv(uniform, 1, false, glm::value_ptr(matrix));
+    }
+}
+
+void ShaderProgram::setUniform(string uniform, GLint value) {
+    GLint handle = gl::GetUniformLocation(program, uniform.c_str());
+    if (handle == -1) {
+        throw AppException("OpenGL", "Shader error", "Uniform \"" + uniform + "\" is not found in shader program");
+    }
+    gl::UseProgram(program);
+    gl::Uniform1i(handle, value);
+}
+
+void ShaderProgram::setUniform(string uniform, GLfloat value) {
+    GLint handle = gl::GetUniformLocation(program, uniform.c_str());
+    if (handle == -1) {
+        throw AppException("OpenGL", "Shader error", "Uniform \"" + uniform + "\" is not found in shader program");
+    }
+    gl::UseProgram(program);
+    gl::Uniform1f(handle, value);
+}
+
+void ShaderProgram::setUniform(string uniform, glm::mat4 &matrix) {
+    GLint handle = gl::GetUniformLocation(program, uniform.c_str());
+    if (handle == -1) {
+        throw AppException("OpenGL", "Shader error", "Uniform \"" + uniform + "\" is not found in shader program");
+    }
+    gl::UseProgram(program);
+    gl::UniformMatrix4fv(handle, 1, false, glm::value_ptr(matrix));
 }

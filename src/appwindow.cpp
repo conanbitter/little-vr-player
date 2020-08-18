@@ -110,7 +110,7 @@ void AppWindow::run() {
     createDome(1.0f, graphics);
 
     ShaderProgram shader(vertexShaderCode, fragmentShaderCode);
-    shader.bind();
+    shader.setUniform("tex", 0);
 
     Texture splash;
     splash.loadFromFile("splash.png");

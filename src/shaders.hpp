@@ -2,6 +2,7 @@
 
 #include <gl/gl_core_3_2.hpp>
 #include <string>
+#include <glm/glm.hpp>
 
 using namespace std;
 
@@ -22,4 +23,12 @@ class ShaderProgram {
     operator GLuint() const {
         return program;
     };
+
+    GLint getUniformHandle(string name);
+    void setUniform(GLint uniform, GLint value);
+    void setUniform(GLint uniform, GLfloat value);
+    void setUniform(GLint uniform, glm::mat4& matrix);
+    void setUniform(string uniform, GLint value);
+    void setUniform(string uniform, GLfloat value);
+    void setUniform(string uniform, glm::mat4& matrix);
 };
