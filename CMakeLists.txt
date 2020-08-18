@@ -7,7 +7,6 @@ set(EXECUTABLE_OUTPUT_PATH ./${CMAKE_BUILD_TYPE})
 find_package(SDL2 REQUIRED)
 find_package(glLoadGen REQUIRED)
 find_package(STB REQUIRED)
-find_package(libav REQUIRED)
 find_package(libmpv REQUIRED)
 find_package(glm REQUIRED)
 
@@ -24,8 +23,6 @@ add_executable(lvrp
     src/graphics.cpp
     src/textures.hpp
     src/textures.cpp
-    src/video.hpp
-    src/video.cpp
     src/player.hpp
     src/player.cpp
     src/camera.hpp
@@ -38,7 +35,6 @@ target_include_directories(lvrp
         ${SDL2_INCLUDE_DIR_64}
         ${MPV_INCLUDE_DIR}
         ${STB_INCLUDE_DIR}
-        ${LIBAV_INCLUDE_DIR}
         ${GLM_INCLUDE_DIR}
 )
 
@@ -46,16 +42,11 @@ target_link_directories(lvrp
     PUBLIC
         ${SDL2_LIBRARY_64}
         ${MPV_LIBRARY}
-        ${LIBAV_LIBRARY}
 )
 
 target_link_libraries(lvrp
     SDL2
     SDL2main
     opengl32
-    avcodec
-    avformat
-    swscale
-    avutil
     mpv
 )

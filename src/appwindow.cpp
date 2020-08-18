@@ -6,7 +6,6 @@
 #include "graphics.hpp"
 #include "shaders.hpp"
 #include "textures.hpp"
-#include "video.hpp"
 #include "player.hpp"
 
 const string vertexShaderCode = R"(
