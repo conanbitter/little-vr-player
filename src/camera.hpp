@@ -1,6 +1,5 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include <gl/gl_core_3_2.hpp>
 #include "shaders.hpp"
 
@@ -8,16 +7,20 @@ class Camera {
    private:
     float horAngle;
     float vertAngle;
-    float zoom;
-    glm::mat4 perspMatrix;
-    glm::mat4 rotMatrix;
+    float fov;
+    float width;
+    float height;
     GLint perspMatrixUniform;
     GLint rotMatrixUniform;
+    ShaderProgram& _program;
+    void updatePersp();
+    void updateRot();
+    void resetRot();
 
    public:
-    Camera(ShaderProgram& program);
+    Camera(ShaderProgram& program, int screenWidth, int screenHeight);
     void changeAngles(float dHor, float dVert);
-    void changeZoom(float dZoom);
-    void changeScreenSize(int width, int height);
+    void changeFov(float dFov);
+    void changeScreenSize(int newWidth, int newHeight);
     void resetView();
 };
