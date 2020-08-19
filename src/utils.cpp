@@ -47,9 +47,8 @@ void saveToObj(string filename, GLfloat* vertexData, int vertexCount, GLuint* in
     file.close();
 }
 
-const float PI = 3.14159265358979f;
-const int SEGMENTS_VERTICAL = 16;
-const int SEGMENTS_HORISONTAL = 16;
+const int SEGMENTS_VERTICAL = 64;
+const int SEGMENTS_HORISONTAL = 64;
 const int DOME_VERTEX_COUNT = (SEGMENTS_HORISONTAL + 1) * (SEGMENTS_VERTICAL + 1) - 2;
 const int DOME_INDEX_COUNT = SEGMENTS_HORISONTAL * (SEGMENTS_VERTICAL - 1) * 2 * 3;
 
@@ -81,7 +80,7 @@ void createDome(float r, Graphics& graphics) {
         vertices[index + 1] = r;
         vertices[index + 2] = 0.0f;
         vertices[index + 3] = 1 - ((float)x + 0.5f) / SEGMENTS_HORISONTAL;
-        vertices[index + 4] = 0.0f;
+        vertices[index + 4] = 1.0f;
         index += 5;
     }
     for (int x = 0; x < SEGMENTS_HORISONTAL; x++) {
@@ -89,7 +88,7 @@ void createDome(float r, Graphics& graphics) {
         vertices[index + 1] = -r;
         vertices[index + 2] = 0.0f;
         vertices[index + 3] = 1 - ((float)x + 0.5f) / SEGMENTS_HORISONTAL;
-        vertices[index + 4] = 1.0f;
+        vertices[index + 4] = 0.0f;
         index += 5;
     }
     index = 0;

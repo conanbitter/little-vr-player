@@ -7,6 +7,8 @@
 
 using namespace std;
 
+const float PI = 3.14159265358979f;
+
 struct AppException : public std::exception {
     string message;
 
