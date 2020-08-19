@@ -1,5 +1,6 @@
 #include <glm/ext.hpp>
 #include "camera.hpp"
+#include "utils.hpp"
 
 const float DEFAULT_FOV = 45.0f;
 const float MAX_FOV = 100.0f;
@@ -16,10 +17,10 @@ Camera::Camera(ShaderProgram& program, int screenWidth, int screenHeight)
 void Camera::changeAngles(float dHor, float dVert) {
     horAngle += dHor;
     vertAngle += dVert;
-    if (horAngle < -90.0f) horAngle = -90.f;
-    if (horAngle > 90.0f) horAngle = 90.f;
-    if (vertAngle < -90.0f) vertAngle = -90.f;
-    if (vertAngle > 90.0f) vertAngle = 90.f;
+    if (horAngle < -PI / 2) horAngle = -PI / 2;
+    if (horAngle > PI / 2) horAngle = PI / 2;
+    if (vertAngle < -PI / 2) vertAngle = -PI / 2;
+    if (vertAngle > PI / 2) vertAngle = PI / 2;
     updateRot();
 }
 
@@ -37,8 +38,8 @@ void Camera::updatePersp() {
 
 void Camera::updateRot() {
     glm::mat4 rotMatrix(1.0f);
-    rotMatrix = glm::rotate(rotMatrix, horAngle, glm::vec3(0.0f, 1.0f, 0.0f));
     rotMatrix = glm::rotate(rotMatrix, vertAngle, glm::vec3(1.0f, 0.0f, 0.0f));
+    rotMatrix = glm::rotate(rotMatrix, horAngle, glm::vec3(0.0f, 1.0f, 0.0f));
     _program.setUniform(rotMatrixUniform, rotMatrix);
 }
 
