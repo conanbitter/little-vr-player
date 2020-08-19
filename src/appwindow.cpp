@@ -7,6 +7,7 @@
 #include "shaders.hpp"
 #include "textures.hpp"
 #include "player.hpp"
+#include "camera.hpp"
 
 const string vertexShaderCode = R"(
     #version 410
@@ -16,8 +17,11 @@ const string vertexShaderCode = R"(
 
     out vec2 fragUV;
 
+    uniform mat4 perspMat;
+    uniform mat4 rotMat;
+
     void main() {
-        gl_Position = vec4(vert.x, vert.y, vert.z, 1.0);
+        gl_Position = perspMat * rotMat * vec4(vert.x, vert.y, vert.z, 1.0);
         fragUV = vertUV;
     }
 )";
@@ -31,7 +35,7 @@ const string fragmentShaderCode = R"(
     layout(location = 0) out vec4 outputColor;
 
     void main() {
-        outputColor = texture(tex, vec2(fragUV.x,fragUV.y));
+        outputColor = texture(tex, vec2(fragUV.x/2,fragUV.y));
     }
 )";
 
@@ -78,38 +82,13 @@ AppWindow::~AppWindow() {
 }
 
 void AppWindow::run() {
-    GLfloat quadVertex[] = {
-        -0.5,
-        -0.5,
-        0.0,
-        0.0,
-        0.0,
-        -0.5,
-        0.5,
-        0.0,
-        0.0,
-        1.0,
-        0.5,
-        0.5,
-        0.0,
-        1.0,
-        1.0,
-        0.5,
-        -0.5,
-        0.0,
-        1.0,
-        0.0,
-    };
-
-    GLuint quadIndex[] = {0, 1, 2, 0, 2, 3};
-
     Graphics graphics;
-    //graphics.loadMesh(quadVertex, 4, quadIndex, 6);
-    //saveToObj("test.obj", quadVertex, 4, quadIndex, 6);
     createDome(1.0f, graphics);
 
     ShaderProgram shader(vertexShaderCode, fragmentShaderCode);
     shader.setUniform("tex", 0);
+
+    Camera camera(shader, 1280, 720);
 
     Texture splash;
     splash.loadFromFile("splash.png");
@@ -119,6 +98,8 @@ void AppWindow::run() {
 
     SDL_Event event;
     bool working = true;
+    bool lookmode = false;
+    int oldx, oldy;
     while (working) {
         bool needRedraw = false;
         while (SDL_PollEvent(&event)) {
@@ -129,6 +110,23 @@ void AppWindow::run() {
                 case SDL_WINDOWEVENT:
                     if (event.window.event == SDL_WINDOWEVENT_EXPOSED)
                         needRedraw = true;
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                    if (event.button.button == SDL_BUTTON_LEFT) {
+                        lookmode = !lookmode;
+                        SDL_SetRelativeMouseMode(lookmode ? SDL_TRUE : SDL_FALSE);
+                        if (!lookmode) {
+                            SDL_WarpMouseInWindow(window, oldx, oldy);
+                        } else {
+                            oldx = event.button.x;
+                            oldy = event.button.y;
+                        }
+                    }
+                    break;
+                case SDL_MOUSEMOTION:
+                    if (lookmode) {
+                        camera.changeAngles((float)event.motion.xrel / 500.0f, (float)event.motion.yrel / 500.0f);
+                    }
                     break;
                 default:
                     needRedraw = needRedraw || player.processMessages(event);
