@@ -48,14 +48,20 @@ string AppWindow::getSDLError() {
     }
 }
 
-AppWindow::AppWindow(int width, int height) {
-    SDL_Init(SDL_INIT_EVERYTHING);
+AppWindow::AppWindow(int width, int height) : windowWidth{width}, windowHeight{height} {
+    SDL_Init(SDL_INIT_VIDEO);
 
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-    window = SDL_CreateWindow("Little VR player", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow(
+        "Little VR player",
+        SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED,
+        windowWidth,
+        windowHeight,
+        SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     context = SDL_GL_CreateContext(window);
     if (context == NULL) {
         throw AppException("SDL", "Error creating context", getSDLError());
@@ -88,7 +94,7 @@ void AppWindow::run() {
     ShaderProgram shader(vertexShaderCode, fragmentShaderCode);
     shader.setUniform("tex", 0);
 
-    Camera camera(shader, 1280, 720);
+    Camera camera(shader, windowWidth, windowHeight);
 
     Texture splash;
     splash.loadFromFile("splash.png");
@@ -100,6 +106,7 @@ void AppWindow::run() {
     bool working = true;
     bool lookmode = false;
     int oldx, oldy;
+    char* dropped_filedir;
     while (working) {
         bool needRedraw = false;
         while (SDL_PollEvent(&event)) {
@@ -108,8 +115,14 @@ void AppWindow::run() {
                     working = false;
                     break;
                 case SDL_WINDOWEVENT:
-                    if (event.window.event == SDL_WINDOWEVENT_EXPOSED)
+                    if (event.window.event == SDL_WINDOWEVENT_EXPOSED) {
                         needRedraw = true;
+                    }
+                    if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                        windowWidth = event.window.data1;
+                        windowHeight = event.window.data2;
+                        camera.changeScreenSize(windowWidth, windowHeight);
+                    }
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                     if (event.button.button == SDL_BUTTON_LEFT) {
@@ -128,8 +141,13 @@ void AppWindow::run() {
                         camera.changeAngles((float)event.motion.xrel / 500.0f, (float)event.motion.yrel / 500.0f);
                     }
                     break;
+                case SDL_DROPFILE:
+                    dropped_filedir = event.drop.file;
+                    player.openFile(dropped_filedir);
+                    SDL_free(dropped_filedir);
+                    break;
                 default:
-                    needRedraw = needRedraw || player.processMessages(event);
+                    needRedraw = player.processMessages(event) || needRedraw;
             }
         }
 
@@ -143,8 +161,8 @@ void AppWindow::run() {
         shader.bind();
         //splash.bind();
         player.bindTexture();
-        gl::Viewport(0, 0, 1280, 720);
-        gl::Scissor(0, 0, 1280, 720);
+        gl::Viewport(0, 0, windowWidth, windowHeight);
+        gl::Scissor(0, 0, windowWidth, windowHeight);
         //gl::PolygonMode(gl::FRONT_AND_BACK, gl::LINE);
         graphics.drawMesh();
 

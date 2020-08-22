@@ -10,6 +10,8 @@ class AppWindow {
    private:
     SDL_Window* window;
     SDL_GLContext context;
+    int windowWidth;
+    int windowHeight;
 
     static string getSDLError();
 
