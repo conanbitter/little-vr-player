@@ -16,6 +16,9 @@ static void *getProcAddress(void *fn_ctx, const char *name) {
 const uint64_t PROPERTY_WIDTH = 1;
 const uint64_t PROPERTY_HEIGHT = 2;
 const uint64_t PROPERTY_DURATION = 3;
+const uint64_t PROPERTY_TITLE = 4;
+const uint64_t PROPERTY_POS = 5;
+const uint64_t PROPERTY_PAUSE = 6;
 
 Player::Player() {
     mpv = mpv_create();
@@ -83,6 +86,9 @@ Player::Player() {
     mpv_observe_property(mpv, PROPERTY_WIDTH, "width", MPV_FORMAT_INT64);
     mpv_observe_property(mpv, PROPERTY_HEIGHT, "height", MPV_FORMAT_INT64);
     mpv_observe_property(mpv, PROPERTY_DURATION, "duration", MPV_FORMAT_DOUBLE);
+    mpv_observe_property(mpv, PROPERTY_TITLE, "media-title", MPV_FORMAT_STRING);
+    mpv_observe_property(mpv, PROPERTY_POS, "time-pos", MPV_FORMAT_DOUBLE);
+    mpv_observe_property(mpv, PROPERTY_PAUSE, "core-idle", MPV_FORMAT_FLAG);
 }
 
 Player::~Player() {
@@ -156,6 +162,18 @@ bool Player::processMessages(SDL_Event &event) {
                         if (prop->format == MPV_FORMAT_DOUBLE) {
                             double newDuration = *(double *)prop->data;
                             std::cout << newDuration << std::endl;
+                        }
+                        break;
+                    case PROPERTY_TITLE:
+                        if (prop->format == MPV_FORMAT_STRING) {
+                        }
+                        break;
+                    case PROPERTY_POS:
+                        if (prop->format == MPV_FORMAT_DOUBLE) {
+                        }
+                        break;
+                    case PROPERTY_PAUSE:
+                        if (prop->format == MPV_FORMAT_FLAG) {
                         }
                         break;
                 }
