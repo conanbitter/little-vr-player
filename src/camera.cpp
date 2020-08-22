@@ -3,8 +3,8 @@
 #include "utils.hpp"
 
 const float DEFAULT_FOV = 45.0f;
-const float MAX_FOV = 100.0f;
-const float MIN_FOV = 10.0f;
+const float MAX_FOV = 120.0f;
+const float MIN_FOV = 20.0f;
 
 Camera::Camera(ShaderProgram& program, int screenWidth, int screenHeight)
     : _program{program}, width{(float)screenWidth}, height{(float)screenHeight} {

@@ -141,6 +141,9 @@ void AppWindow::run() {
                         camera.changeAngles((float)event.motion.xrel / 500.0f, (float)event.motion.yrel / 500.0f);
                     }
                     break;
+                case SDL_MOUSEWHEEL:
+                    camera.changeFov(-1.0f * event.wheel.y);
+                    break;
                 case SDL_DROPFILE:
                     dropped_filedir = event.drop.file;
                     player.openFile(dropped_filedir);
