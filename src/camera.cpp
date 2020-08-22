@@ -2,7 +2,7 @@
 #include "camera.hpp"
 #include "utils.hpp"
 
-const float DEFAULT_FOV = 45.0f;
+const float DEFAULT_FOV = 60.0f;
 const float MAX_FOV = 120.0f;
 const float MIN_FOV = 20.0f;
 
