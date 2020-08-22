@@ -27,6 +27,8 @@ add_executable(lvrp
     src/player.cpp
     src/camera.hpp
     src/camera.cpp
+    src/appui.hpp
+    src/appui.cpp
 )
 
 target_include_directories(lvrp

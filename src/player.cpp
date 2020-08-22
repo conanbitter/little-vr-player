@@ -20,7 +20,7 @@ const uint64_t PROPERTY_TITLE = 4;
 const uint64_t PROPERTY_POS = 5;
 const uint64_t PROPERTY_PAUSE = 6;
 
-Player::Player() {
+Player::Player(PlayerStateListener &listener) : stateListener{listener} {
     mpv = mpv_create();
     if (!mpv) {
         throw AppException("MPV", "Player context init failed.");
@@ -166,6 +166,10 @@ bool Player::processMessages(SDL_Event &event) {
                         break;
                     case PROPERTY_TITLE:
                         if (prop->format == MPV_FORMAT_STRING) {
+                            char *newTitle = *(char **)(prop->data);
+                            if (newTitle != nullptr) {
+                                stateListener.onChangeTitle(newTitle);
+                            }
                         }
                         break;
                     case PROPERTY_POS:

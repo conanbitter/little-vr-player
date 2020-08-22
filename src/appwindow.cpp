@@ -8,6 +8,7 @@
 #include "textures.hpp"
 #include "player.hpp"
 #include "camera.hpp"
+#include "appui.hpp"
 
 const string vertexShaderCode = R"(
     #version 410
@@ -99,7 +100,9 @@ void AppWindow::run() {
     Texture splash;
     splash.loadFromFile("splash.png");
 
-    Player player;
+    AppUI ui(window);
+
+    Player player(ui);
     player.openFile("bbb_sunflower_2160p_60fps_normal.mp4");
 
     SDL_Event event;
