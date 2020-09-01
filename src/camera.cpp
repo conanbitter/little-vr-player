@@ -7,7 +7,7 @@ const float MAX_FOV = 120.0f;
 const float MIN_FOV = 20.0f;
 
 Camera::Camera(ShaderProgram& program, int screenWidth, int screenHeight)
-    : _program{program}, width{(float)screenWidth}, height{(float)screenHeight} {
+    : _program{program}, width{(float)screenWidth}, height{(float)screenHeight}, pixelRatio{1.0f} {
     perspMatrixUniform = program.getUniformHandle("perspMat");
     rotMatrixUniform = program.getUniformHandle("rotMat");
 
@@ -24,6 +24,10 @@ void Camera::changeAngles(float dHor, float dVert) {
     updateRot();
 }
 
+void Camera::changeAnglesPix(float dHor, float dVert) {
+    changeAngles(dHor * pixelRatio, dVert * pixelRatio);
+}
+
 void Camera::changeFov(float dFov) {
     fov += dFov;
     if (fov < MIN_FOV) fov = MIN_FOV;
@@ -32,6 +36,7 @@ void Camera::changeFov(float dFov) {
 }
 
 void Camera::updatePersp() {
+    pixelRatio = glm::radians(fov) / (height < width ? height : width);
     glm::mat4 perspMatrix = glm::perspectiveFov(glm::radians(fov), width, height, 0.01f, 100.0f);
     _program.setUniform(perspMatrixUniform, perspMatrix);
 }
@@ -44,6 +49,8 @@ void Camera::updateRot() {
 }
 
 void Camera::resetRot() {
+    vertAngle = 0.0f;
+    horAngle = 0.0f;
     glm::mat4 rotMatrix(1.0f);
     _program.setUniform(rotMatrixUniform, rotMatrix);
 }

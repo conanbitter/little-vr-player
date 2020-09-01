@@ -10,17 +10,19 @@ class Camera {
     float fov;
     float width;
     float height;
+    float pixelRatio;
     GLint perspMatrixUniform;
     GLint rotMatrixUniform;
     ShaderProgram& _program;
     void updatePersp();
     void updateRot();
-    void resetRot();
 
    public:
     Camera(ShaderProgram& program, int screenWidth, int screenHeight);
     void changeAngles(float dHor, float dVert);
+    void changeAnglesPix(float dHor, float dVert);
     void changeFov(float dFov);
     void changeScreenSize(int newWidth, int newHeight);
     void resetView();
+    void resetRot();
 };
