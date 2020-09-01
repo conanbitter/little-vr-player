@@ -138,18 +138,41 @@ void AppWindow::run() {
                             oldy = event.button.y;
                         }
                     }
+                    /*if (event.button.button == SDL_BUTTON_RIGHT && !lookmode) {
+                        double position = (double)event.button.x / windowWidth * 100.0;
+                        player.seek(position);
+                    }*/
                     break;
                 case SDL_MOUSEMOTION:
                     if (lookmode) {
                         camera.changeAngles((float)event.motion.xrel / 500.0f, (float)event.motion.yrel / 500.0f);
                     }
+                    if (event.motion.state & SDL_BUTTON_RMASK) {
+                        camera.changeAnglesPix(-event.motion.xrel, -event.motion.yrel);
+                    }
                     break;
                 case SDL_MOUSEWHEEL:
                     camera.changeFov(-1.0f * event.wheel.y);
                     break;
+                case SDL_KEYDOWN:
+                    switch (event.key.keysym.sym) {
+                        case SDLK_ESCAPE:
+                            working = false;
+                            break;
+                        case SDLK_RIGHT:
+                            player.jump(true);
+                            break;
+                        case SDLK_LEFT:
+                            player.jump(false);
+                            break;
+                        case SDLK_SPACE:
+                            player.pauseToggle();
+                    }
+                    break;
                 case SDL_DROPFILE:
                     dropped_filedir = event.drop.file;
                     player.openFile(dropped_filedir);
+                    camera.resetRot();
                     SDL_free(dropped_filedir);
                     break;
                 default:

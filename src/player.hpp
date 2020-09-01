@@ -37,6 +37,10 @@ class Player {
     Player(PlayerStateListener& listener);
     ~Player();
     void openFile(string filename);
+    void pauseToggle();
+    void seek(double position);
+    void jump(bool forward);
+
     void render();
     bool processMessages(SDL_Event& event);
     void bindTexture();

@@ -88,7 +88,9 @@ Player::Player(PlayerStateListener &listener) : stateListener{listener} {
     mpv_observe_property(mpv, PROPERTY_DURATION, "duration", MPV_FORMAT_DOUBLE);
     mpv_observe_property(mpv, PROPERTY_TITLE, "media-title", MPV_FORMAT_STRING);
     mpv_observe_property(mpv, PROPERTY_POS, "time-pos", MPV_FORMAT_DOUBLE);
-    mpv_observe_property(mpv, PROPERTY_PAUSE, "core-idle", MPV_FORMAT_FLAG);
+    mpv_observe_property(mpv, PROPERTY_PAUSE, "pause", MPV_FORMAT_FLAG);  //core-idle
+
+    mpv_set_option_string(mpv, "reset-on-next-file", "pause");
 }
 
 Player::~Player() {
@@ -108,6 +110,30 @@ void Player::bindTexture() {
 
 void Player::openFile(string filename) {
     const char *cmd[] = {"loadfile", filename.c_str(), NULL};
+    mpv_command_async(mpv, 0, cmd);
+}
+
+void Player::pauseToggle() {
+    const char *cmd[] = {"cycle", "pause", NULL};
+    mpv_command_async(mpv, 0, cmd);
+}
+
+void Player::seek(double position) {
+    const char *cmd[] = {"seek", "54.56", "absolute-percent+keyframes"};
+    //string spos = to_string(position);
+    char buffer[32];
+    snprintf(buffer, sizeof(buffer), "%g", position);
+    //cout << "seek " << buffer << endl;
+    cmd[1] = buffer;
+
+    mpv_command_async(mpv, 0, cmd);
+}
+
+const char *JUMP_LENGTH_FORWARD = "5";
+const char *JUMP_LENGTH_BACK = "-5";
+
+void Player::jump(bool forward) {
+    const char *cmd[] = {"seek", forward ? JUMP_LENGTH_FORWARD : JUMP_LENGTH_BACK, "relative"};
     mpv_command_async(mpv, 0, cmd);
 }
 
@@ -178,6 +204,7 @@ bool Player::processMessages(SDL_Event &event) {
                         break;
                     case PROPERTY_PAUSE:
                         if (prop->format == MPV_FORMAT_FLAG) {
+                            cout << "Pause " << *(int *)(prop->data) << endl;
                         }
                         break;
                 }
