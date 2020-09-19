@@ -103,7 +103,7 @@ void AppWindow::run() {
     AppUI ui(window);
 
     Player player(ui);
-    player.openFile("bbb_sunflower_2160p_60fps_normal.mp4");
+    player.openFile("vrtest.mp4");
 
     SDL_Event event;
     bool working = true;
