@@ -163,20 +163,20 @@ void AppWindow::run() {
                             break;
                         case SDLK_RIGHT:
                             jumpLength = 1;
-                            if (event.key.keysym.mod & KMOD_CTRL) {
+                            if (event.key.keysym.mod & KMOD_SHIFT) {
                                 jumpLength = 2;
                             }
-                            if (event.key.keysym.mod & KMOD_SHIFT) {
+                            if (event.key.keysym.mod & KMOD_CTRL) {
                                 jumpLength = 3;
                             }
                             player.jump(true, jumpLength);
                             break;
                         case SDLK_LEFT:
                             jumpLength = 1;
-                            if (event.key.keysym.mod & KMOD_CTRL) {
+                            if (event.key.keysym.mod & KMOD_SHIFT) {
                                 jumpLength = 2;
                             }
-                            if (event.key.keysym.mod & KMOD_SHIFT) {
+                            if (event.key.keysym.mod & KMOD_CTRL) {
                                 jumpLength = 3;
                             }
                             player.jump(false, jumpLength);

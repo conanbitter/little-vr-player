@@ -133,8 +133,8 @@ const char *SHORTJUMP_LENGTH_FORWARD = "5";
 const char *SHORTJUMP_LENGTH_BACK = "-5";
 const char *JUMP_LENGTH_FORWARD = "60";
 const char *JUMP_LENGTH_BACK = "-60";
-const char *LONGJUMP_LENGTH_FORWARD = "300";
-const char *LONGJUMP_LENGTH_BACK = "-300";
+const char *LONGJUMP_LENGTH_FORWARD = "180";
+const char *LONGJUMP_LENGTH_BACK = "-180";
 
 void Player::jump(bool forward, int jumpLength) {
     const char *cmd[] = {"seek", SHORTJUMP_LENGTH_FORWARD, "relative"};
@@ -203,6 +203,7 @@ bool Player::processMessages(SDL_Event &event) {
                         if (prop->format == MPV_FORMAT_DOUBLE) {
                             double newDuration = *(double *)prop->data;
                             std::cout << newDuration << std::endl;
+                            stateListener.onChangeDuration(newDuration);
                         }
                         break;
                     case PROPERTY_TITLE:
@@ -215,6 +216,8 @@ bool Player::processMessages(SDL_Event &event) {
                         break;
                     case PROPERTY_POS:
                         if (prop->format == MPV_FORMAT_DOUBLE) {
+                            double newPos = *(double *)prop->data;
+                            stateListener.onChangePos(newPos);
                         }
                         break;
                     case PROPERTY_PAUSE:

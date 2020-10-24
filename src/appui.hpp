@@ -8,6 +8,9 @@ class AppUI : public PlayerStateListener {
     double position;
     bool paused;
     SDL_Window* _window;
+    string stringDuration;
+    string title;
+    void updateTitle();
 
    public:
     AppUI(SDL_Window* window);
