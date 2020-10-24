@@ -129,11 +129,26 @@ void Player::seek(double position) {
     mpv_command_async(mpv, 0, cmd);
 }
 
-const char *JUMP_LENGTH_FORWARD = "5";
-const char *JUMP_LENGTH_BACK = "-5";
+const char *SHORTJUMP_LENGTH_FORWARD = "5";
+const char *SHORTJUMP_LENGTH_BACK = "-5";
+const char *JUMP_LENGTH_FORWARD = "60";
+const char *JUMP_LENGTH_BACK = "-60";
+const char *LONGJUMP_LENGTH_FORWARD = "300";
+const char *LONGJUMP_LENGTH_BACK = "-300";
 
-void Player::jump(bool forward) {
-    const char *cmd[] = {"seek", forward ? JUMP_LENGTH_FORWARD : JUMP_LENGTH_BACK, "relative"};
+void Player::jump(bool forward, int jumpLength) {
+    const char *cmd[] = {"seek", SHORTJUMP_LENGTH_FORWARD, "relative"};
+    switch (jumpLength) {
+        case 1:
+            cmd[1] = forward ? SHORTJUMP_LENGTH_FORWARD : SHORTJUMP_LENGTH_BACK;
+            break;
+        case 2:
+            cmd[1] = forward ? JUMP_LENGTH_FORWARD : JUMP_LENGTH_BACK;
+            break;
+        case 3:
+            cmd[1] = forward ? LONGJUMP_LENGTH_FORWARD : LONGJUMP_LENGTH_BACK;
+            break;
+    }
     mpv_command_async(mpv, 0, cmd);
 }
 

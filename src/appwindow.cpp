@@ -110,6 +110,7 @@ void AppWindow::run() {
     bool lookmode = false;
     int oldx, oldy;
     char* dropped_filedir;
+    int jumpLength = 1;
     while (working) {
         bool needRedraw = false;
         while (SDL_PollEvent(&event)) {
@@ -125,6 +126,7 @@ void AppWindow::run() {
                         windowWidth = event.window.data1;
                         windowHeight = event.window.data2;
                         camera.changeScreenSize(windowWidth, windowHeight);
+                        ui.onResize(windowWidth, windowHeight);
                     }
                     break;
                 case SDL_MOUSEBUTTONDOWN:
@@ -160,10 +162,24 @@ void AppWindow::run() {
                             working = false;
                             break;
                         case SDLK_RIGHT:
-                            player.jump(true);
+                            jumpLength = 1;
+                            if (event.key.keysym.mod & KMOD_CTRL) {
+                                jumpLength = 2;
+                            }
+                            if (event.key.keysym.mod & KMOD_SHIFT) {
+                                jumpLength = 3;
+                            }
+                            player.jump(true, jumpLength);
                             break;
                         case SDLK_LEFT:
-                            player.jump(false);
+                            jumpLength = 1;
+                            if (event.key.keysym.mod & KMOD_CTRL) {
+                                jumpLength = 2;
+                            }
+                            if (event.key.keysym.mod & KMOD_SHIFT) {
+                                jumpLength = 3;
+                            }
+                            player.jump(false, jumpLength);
                             break;
                         case SDLK_SPACE:
                             player.pauseToggle();

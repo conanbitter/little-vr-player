@@ -39,7 +39,7 @@ class Player {
     void openFile(string filename);
     void pauseToggle();
     void seek(double position);
-    void jump(bool forward);
+    void jump(bool forward, int jumpLength);
 
     void render();
     bool processMessages(SDL_Event& event);
