@@ -29,10 +29,10 @@ Player::Player(PlayerStateListener &listener) : stateListener{listener} {
         throw AppException("MPV", "Player instance init failed.");
     }
 
-    mpv_opengl_init_params openglInitParams;
+    static mpv_opengl_init_params openglInitParams;
     openglInitParams.get_proc_address = getProcAddress;
 
-    mpv_render_param initParams[] = {
+    static mpv_render_param initParams[] = {
         {MPV_RENDER_PARAM_API_TYPE, (void *)MPV_RENDER_API_TYPE_OPENGL},
         {MPV_RENDER_PARAM_OPENGL_INIT_PARAMS, &openglInitParams},
         {MPV_RENDER_PARAM_ADVANCED_CONTROL, &one},
